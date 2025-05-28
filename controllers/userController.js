@@ -2,7 +2,7 @@ import userModel from "../models/userModel.js";
 import { stringToHash, verifyHash } from "bcrypt-inzi";
 
 export const signup = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, age, isMarried } = req.body;
 
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).send({ message: "All fields are required." });
@@ -20,18 +20,21 @@ export const signup = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
+      age,         // add age here
+      isMarried,   // add isMarried here
     });
 
     await newUser.save();
     res.status(201).send({ message: "User created successfully." });
   } catch (error) {
     console.error("Signup error:", error);
-    if (error.code === 11000) { // Handle unique constraint violation
+    if (error.code === 11000) {
       return res.status(400).send({ message: "Email is already registered." });
     }
     res.status(500).send({ message: "Internal server error." });
   }
 };
+
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
